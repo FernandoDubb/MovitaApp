@@ -1,5 +1,6 @@
 import { View, Text, Button } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import ShareButton from "../components/ShareButton";
 
 export default function HomeScreen() {
   const nav = useNavigation<any>();
@@ -7,7 +8,15 @@ export default function HomeScreen() {
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <Text>¿Cómo te sientes hoy?</Text>
-      <Button title="Elegir emoción" onPress={() => nav.navigate("Emotion")} />
+
+      <Button
+        title="Elegir emoción"
+        onPress={() => nav.navigate("Emotion")}
+      />
+
+      <View style={{ marginTop: 20 }}>
+        <ShareButton />
+      </View>
     </View>
   );
 }
