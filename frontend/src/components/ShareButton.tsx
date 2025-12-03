@@ -5,7 +5,7 @@ export default function ShareButton() {
   const onShare = async () => {
     try {
       await Share.share({
-        message: "Mira este contenido desde mi app MovitaApp!",
+        message: "Mira este contenido desde mi app MovitaApp",
       });
     } catch (error) {
       console.log("Error al compartir:", error);
