@@ -1,7 +1,7 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Ionicons } from "@expo/vector-icons"; 
+import { Ionicons } from "@expo/vector-icons";
 
 import LoginScreen from "../screens/LoginScreen";
 import HomeScreen from "../screens/HomeScreen";
@@ -17,15 +17,13 @@ function Tabs() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarStyle: { backgroundColor: "#000" }, 
-        tabBarActiveTintColor: "#ff6b6b",          
-        tabBarInactiveTintColor: "gray",          
+        tabBarStyle: { backgroundColor: "#000" },
+        tabBarActiveTintColor: "#ff6b6b",
+        tabBarInactiveTintColor: "gray",
         tabBarIcon: ({ color, size }) => {
-          let iconName: string = "";
-
+          let iconName = "";
           if (route.name === "Home") iconName = "home-outline";
           else if (route.name === "Favorites") iconName = "heart-outline";
-
           return <Ionicons name={iconName as any} size={size} color={color} />;
         },
       })}
