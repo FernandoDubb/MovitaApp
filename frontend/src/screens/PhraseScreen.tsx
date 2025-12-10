@@ -1,60 +1,91 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Alert } from "react-native";
-import { useRoute, useNavigation } from "@react-navigation/native";
-import { EMOTIONS, EmotionType } from "../services/emotions";
+import React, { useState, useEffect } from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { useRoute } from "@react-navigation/native";
+import { EMOTIONS } from "../services/emotions";
 import { addFavorite } from "../services/favorites";
-
-type RouteParams = { emotion: EmotionType };
+import * as Notifications from "expo-notifications";
 
 export default function PhraseScreen() {
   const route = useRoute<any>();
-  const nav = useNavigation<any>();
-  const { emotion } = route.params as RouteParams;
+  const emotion: string = route.params?.emotion;
 
-  const getRandomPhrase = (): string => {
-    const phrases = EMOTIONS[emotion];
-    const randomIndex = Math.floor(Math.random() * phrases.length);
-    return phrases[randomIndex];
+  const [phrase, setPhrase] = useState("");
+
+  useEffect(() => {
+    showRandomPhrase();
+  }, []);
+
+  const showRandomPhrase = () => {
+    const arr = EMOTIONS[emotion as keyof typeof EMOTIONS];
+    const random = arr[Math.floor(Math.random() * arr.length)];
+    setPhrase(random);
   };
 
-  const [phrase, setPhrase] = useState<string>(getRandomPhrase());
-  const [added, setAdded] = useState(false); 
+  const setReminder = async () => {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Tu recordatorio motivacional 💫",
+        body: "Regresa a MotivaApp por un mensaje especial.",
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+        seconds: 10,
+        repeats: false,
+      },
+    });
 
-  const handleAddFavorite = () => {
-    addFavorite({ phrase, emotion });
-    setAdded(true);
-    Alert.alert("Agregado", "La frase se agregó a favoritos ✅");
+    alert("Recordatorio activado!");
   };
 
   return (
-    <View style={{ flex: 1, justifyContent: "center", padding: 20, backgroundColor: "#000" }}>
-      <Text style={{ fontSize: 22, textAlign: "center", color: "#fff", marginBottom: 20 }}>
-        Tu frase para cuando estás <Text style={{ fontWeight: "bold", color: "#00bcd4" }}>{emotion}</Text>:
-      </Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Tu frase cuando estás:</Text>
+      <Text style={styles.emotion}>{emotion.toUpperCase()}</Text>
 
-      <View style={{ backgroundColor: "#1a1a1a", padding: 25, borderRadius: 15, marginBottom: 30 }}>
-        <Text style={{ fontSize: 18, fontStyle: "italic", textAlign: "center", color: "#fff" }}>"{phrase}"</Text>
+      <View style={styles.phraseBox}>
+        <Text style={styles.phrase}>{phrase}</Text>
       </View>
 
-      <TouchableOpacity
-        onPress={() => setPhrase(getRandomPhrase())}
-        style={{ backgroundColor: "#00bcd4", paddingVertical: 14, borderRadius: 12, marginBottom: 15 }}
-      >
-        <Text style={{ color: "#fff", fontSize: 18, fontWeight: "600", textAlign: "center" }}>Ver otra frase</Text>
+      <TouchableOpacity style={styles.btn} onPress={showRandomPhrase}>
+        <Text style={styles.btnText}>Ver otra frase</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
-        onPress={handleAddFavorite}
-        style={{ backgroundColor: "#4caf50", paddingVertical: 14, borderRadius: 12, marginBottom: 15 }}
+        style={styles.btn}
+        onPress={() => {
+          addFavorite({ phrase, emotion });
+          alert("Agregado a favoritos");
+        }}
       >
-        <Text style={{ color: "#fff", fontSize: 18, fontWeight: "600", textAlign: "center" }}>
-          {added ? "Agregado ✅" : "Agregar a favoritos"}
-        </Text>
+        <Text style={styles.btnText}>Agregar a favoritos</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={{ paddingVertical: 12 }} onPress={() => nav.goBack()}>
-        <Text style={{ fontSize: 16, color: "#fff", textAlign: "center" }}>Volver</Text>
+      <TouchableOpacity style={styles.btn} onPress={setReminder}>
+        <Text style={styles.btnText}>Recordatorio motivacional</Text>
       </TouchableOpacity>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "#1c1c1e", alignItems: "center", paddingTop: 60 },
+  title: { color: "#fff", fontSize: 22 },
+  emotion: { color: "#ff6b6b", fontSize: 30, marginVertical: 10 },
+  phraseBox: {
+    backgroundColor: "#333",
+    padding: 20,
+    borderRadius: 12,
+    width: "85%",
+    marginVertical: 30,
+  },
+  phrase: { color: "#fff", fontSize: 18, textAlign: "center" },
+  btn: {
+    backgroundColor: "#ff6b6b",
+    padding: 15,
+    borderRadius: 12,
+    width: "70%",
+    marginTop: 15,
+    alignItems: "center",
+  },
+  btnText: { color: "#fff", fontSize: 16 },
+});

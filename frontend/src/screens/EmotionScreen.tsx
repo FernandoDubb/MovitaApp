@@ -1,26 +1,46 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { EmotionType } from "../services/emotions";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { RootStackParamList } from "../navigation/AppNavigator";
 
 export default function EmotionScreen() {
-  const nav = useNavigation<any>();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
-  const emotions: EmotionType[] = ["feliz", "triste", "enojado", "ansioso", "motivado"];
+  const emotions = [
+    { key: "feliz", label: "Feliz" },
+    { key: "triste", label: "Triste" },
+    { key: "enojado", label: "Enojado" },
+    { key: "ansioso", label: "Ansioso" },
+    { key: "motivado", label: "Motivado" },
+  ];
 
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 20, backgroundColor: "#e0f7fa" }}>
-      <Text style={{ fontSize: 22, fontWeight: "600", marginBottom: 30 }}>Selecciona una emoción:</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Selecciona una emoción</Text>
 
-      {emotions.map((e) => (
+      {emotions.map((item) => (
         <TouchableOpacity
-          key={e}
-          onPress={() => nav.navigate("Phrase", { emotion: e })}
-          style={{ backgroundColor: "#00bcd4", paddingVertical: 12, paddingHorizontal: 25, borderRadius: 25, marginBottom: 15 }}
+          key={item.key}
+          style={styles.button}
+          onPress={() => navigation.navigate("Phrase", { emotion: item.key })}
         >
-          <Text style={{ color: "#fff", fontSize: 18, fontWeight: "500" }}>{e.toUpperCase()}</Text>
+          <Text style={styles.buttonText}>{item.label}</Text>
         </TouchableOpacity>
       ))}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "#1c1c1e", paddingTop: 80, alignItems: "center" },
+  title: { fontSize: 24, color: "#fff", marginBottom: 30 },
+  button: {
+    backgroundColor: "#333",
+    paddingVertical: 15,
+    width: "80%",
+    borderRadius: 10,
+    marginBottom: 15,
+    alignItems: "center",
+  },
+  buttonText: { color: "#fff", fontSize: 18 },
+});

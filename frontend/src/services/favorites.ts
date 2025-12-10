@@ -1,31 +1,29 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const KEY = "FAVORITE_PHRASES";
-
 export type FavoriteItem = {
   phrase: string;
   emotion: string;
 };
 
-export async function addFavorite(item: FavoriteItem) {
-  const data = await AsyncStorage.getItem(KEY);
-  const list = data ? JSON.parse(data) : [];
+const STORAGE_KEY = "favorites_motivaapp";
 
-  list.push(item);
+export const getFavorites = async (): Promise<FavoriteItem[]> => {
+  try {
+    const json = await AsyncStorage.getItem(STORAGE_KEY);
+    return json ? JSON.parse(json) : [];
+  } catch (e) {
+    return [];
+  }
+};
 
-  await AsyncStorage.setItem(KEY, JSON.stringify(list));
-}
+export const addFavorite = async (item: FavoriteItem) => {
+  const current = await getFavorites();
+  current.push(item);
+  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(current));
+};
 
-export async function getFavorites(): Promise<FavoriteItem[]> {
-  const data = await AsyncStorage.getItem(KEY);
-  return data ? JSON.parse(data) : [];
-}
-
-export async function removeFavorite(index: number) {
-  const data = await AsyncStorage.getItem(KEY);
-  const list = data ? JSON.parse(data) : [];
-
-  list.splice(index, 1);
-
-  await AsyncStorage.setItem(KEY, JSON.stringify(list));
-}
+export const removeFavorite = async (index: number) => {
+  const current = await getFavorites();
+  current.splice(index, 1);
+  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(current));
+};

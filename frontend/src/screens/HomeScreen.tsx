@@ -1,23 +1,45 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import ShareButton from "../components/ShareButton";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { RootStackParamList } from "../navigation/AppNavigator";
+import * as Sharing from "expo-sharing";
 
 export default function HomeScreen() {
-  const nav = useNavigation<any>();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
+  const shareWhatsApp = async () => {
+    const message = "Hoy me siento así, usando la app MotivaApp 🤍";
+    await Sharing.shareAsync("", { dialogTitle: message });
+  };
 
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#1c1c1e", padding: 20 }}>
-      <Text style={{ fontSize: 24, fontWeight: "600", color: "#fff", marginBottom: 40 }}>¿Cómo te sientes hoy?</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>¿Cómo te sientes hoy?</Text>
 
       <TouchableOpacity
-        onPress={() => nav.navigate("Emotion")}
-        style={{ backgroundColor: "#00bcd4", paddingVertical: 15, paddingHorizontal: 40, borderRadius: 12, marginBottom: 20 }}
+        style={styles.button}
+        onPress={() => navigation.navigate("Emotion")}
       >
-        <Text style={{ color: "#fff", fontSize: 18, fontWeight: "600" }}>Elegir emoción</Text>
+        <Text style={styles.buttonText}>Elegir emoción</Text>
       </TouchableOpacity>
 
-      <ShareButton />
+      <TouchableOpacity style={styles.button} onPress={shareWhatsApp}>
+        <Text style={styles.buttonText}>Compartir WhatsApp</Text>
+      </TouchableOpacity>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#1c1c1e" },
+  title: { color: "#fff", fontSize: 26, marginBottom: 40, fontWeight: "600" },
+  button: {
+    backgroundColor: "#ff6b6b",
+    padding: 15,
+    width: "70%",
+    borderRadius: 12,
+    marginBottom: 20,
+    alignItems: "center",
+  },
+  buttonText: { color: "#fff", fontSize: 18 },
+});
